@@ -48,3 +48,11 @@ SELECT * FROM club_member_info;
 ```sql
 UPDATE club_member_info_cleaned SET full_name = TRIM(full_name);
 ```
+
+#### Uppercase name
+```sql
+UPDATE club_member_info_cleaned SET full_name = UPPER(full_name);
+```
+
+### martial_status column
+
