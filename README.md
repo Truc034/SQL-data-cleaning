@@ -41,3 +41,10 @@ CREATE TABLE club_member_info_cleaned (
 INSERT INTO club_member_info_cleaned 
 SELECT * FROM club_member_info;
 ```
+
+## Cleanse table 
+### full_name column
+#### Remove space
+```sql
+UPDATE club_member_info_cleaned SET full_name = TRIM(full_name);
+```
