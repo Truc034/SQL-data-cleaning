@@ -48,11 +48,46 @@ SELECT * FROM club_member_info;
 ```sql
 UPDATE club_member_info_cleaned SET full_name = TRIM(full_name);
 ```
-
 #### Uppercase name
 ```sql
 UPDATE club_member_info_cleaned SET full_name = UPPER(full_name);
 ```
 
+### age column
+```sql
+--check unreasonable age
+SELECT * FROM club_member_info_cleaned cmic
+WHERE age <18 OR age >90;
+```
+#### Correct to the first 2 digits if age over 100
+```sql
+UPDATE club_member_info_cleaned
+SET age = CAST(SUBSTR(CAST(age AS TEXT), 1, 2) AS INTEGER)
+WHERE age IS NOT NULL;
+```
+#### Fill in spaces (age=0) using mode
+```sql
+UPDATE club_member_info_cleaned
+SET age = (SELECT age
+           FROM club_member_info_cleaned
+           GROUP BY age
+           ORDER BY COUNT(age) DESC
+           LIMIT 1)
+WHERE age = 0;
+```
+
 ### martial_status column
+```sql
+--check martial_status
+SELECT DISTINCT martial_status FROM club_member_info_cleaned cmic
+```
+#### Correct spelling mistakes and adjust spaces to unknown
+```sql
+UPDATE club_member_info_cleaned
+SET marital_status = CASE
+    WHEN TRIM(martial_status) = 'divored' THEN 'divorced'
+    WHEN TRIM(martial_status) = '' THEN 'unknown'
+    ELSE marital_status
+END;
+```
 
