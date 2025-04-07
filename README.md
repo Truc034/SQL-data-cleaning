@@ -91,3 +91,42 @@ SET marital_status = CASE
 END;
 ```
 
+### email and phone column
+#### delete duplicate
+```sql
+--check duplicate email and phone
+SELECT email, phone, COUNT(*) AS count
+FROM club_member_info_cleaned
+GROUP BY email, phone
+HAVING COUNT(*) > 1;
+
+--delete duplicate email and phone
+DELETE FROM club_member_info_cleaned
+WHERE ROWID NOT IN (
+    SELECT MIN(ROWID)
+    FROM club_member_info_cleaned
+    GROUP BY email, phone
+);
+```
+#### Replace blank phone number to NULL
+```sql
+UPDATE club_member_info_cleaned
+SET phone = NULL
+WHERE TRIM(phone) = '';
+```
+
+### job_title column
+#### Replace blank to NULL
+```sql
+UPDATE club_member_info_cleaned
+SET job_title = NULL
+WHERE TRIM(job_title) = '';
+```
+### membership_date column
+#### Replace years 1900s to 2000s
+```sql
+UPDATE club_member_info_cleaned
+SET membership_date = REPLACE(membership_date, '/19', '/20')
+WHERE membership_date LIKE '%/19__';
+```
+
