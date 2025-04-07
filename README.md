@@ -161,7 +161,7 @@ SET membership_date_cleaned =
     END;
 ```
 
-#Cleaned result
+## Cleaned result
 ```sql
 SELECT * FROM club_member_info_cleaned LIMIT 10;
 ```
