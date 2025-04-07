@@ -130,3 +130,33 @@ SET membership_date = REPLACE(membership_date, '/19', '/20')
 WHERE membership_date LIKE '%/19__';
 ```
 
+#### Format dd/mm/yyyy
+```sql
+--add new column: membership_date_cleaned
+ALTER TABLE club_member_info_cleaned
+ADD COLUMN membership_date_cleaned TEXT;
+
+--add 0 in day and month value
+UPDATE club_member_info_cleaned
+SET membership_date_cleaned = 
+    printf('%02d/%02d/%04d',
+        CAST(substr(membership_date, 1, instr(membership_date, '/') - 1) AS INTEGER), -- day
+        CAST(substr(
+            membership_date,
+            instr(membership_date, '/') + 1,
+            instr(substr(membership_date, instr(membership_date, '/') + 1), '/') - 1
+        ) AS INTEGER), -- month
+        CAST(substr(membership_date, -4) AS INTEGER) -- year
+    );
+
+-- If the month > 12, swap the position of day and month
+UPDATE club_member_info_cleaned
+SET membership_date_cleaned = 
+    CASE 
+        -- If the month > 12, swap the position of day and month
+        WHEN CAST(SUBSTR(membership_date_cleaned, 4, 2) AS INTEGER) > 12
+        THEN SUBSTR(membership_date_cleaned, 4, 2) || '/' || SUBSTR(membership_date_cleaned, 1, 2) || '/' || SUBSTR(membership_date_cleaned, 7, 4)
+        -- If no change is needed, keep the original date
+        ELSE membership_date_cleaned
+    END;
+```
